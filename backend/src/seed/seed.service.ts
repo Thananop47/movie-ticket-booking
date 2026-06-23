@@ -97,21 +97,19 @@ async function seedMoviesAndShowtimes(dataSource: DataSource): Promise<void> {
   for (let i = 0; i < MOVIE_SEED_DATA.length; i++) {
     const movieData = MOVIE_SEED_DATA[i];
 
-    // 1. สร้างหนัง
     const movie = movieRepo.create({ ...movieData, isActive: true });
     const savedMovie = await movieRepo.save(movie);
 
-    // 2. สร้าง 2 รอบฉาย — รอบเช้า (วันนี้+1 วัน 14:00) และรอบเย็น (วันนี้+1 วัน 19:30)
     const baseDate = new Date();
     baseDate.setDate(baseDate.getDate() + 1); // พรุ่งนี้ ป้องกัน "showtime ที่ผ่านมาแล้ว"
     baseDate.setHours(0, 0, 0, 0);
 
     const showtimeConfigs = [
-      { hour: 14, minute: 0, priceMultiplier: 1.0 }, // รอบบ่าย ราคาปกติ
-      { hour: 19, minute: 30, priceMultiplier: 1.2 }, // รอบเย็น ราคาสูงกว่า (prime time)
+      { hour: 14, minute: 0 }, // รอบบ่าย ราคาปกติ
+      { hour: 19, minute: 30 }, // รอบเย็น ราคาสูงกว่า (prime time)
     ];
 
-    const basePrice = 180 + (i % 4) * 20; // ราคาฐานสลับกันเล็กน้อยให้ดูสมจริง
+    const basePrice = 210; // ราคาฐานสลับกันเล็กน้อยให้ดูสมจริง
 
     for (const config of showtimeConfigs) {
       const startTime = new Date(baseDate);
@@ -120,7 +118,7 @@ async function seedMoviesAndShowtimes(dataSource: DataSource): Promise<void> {
       const endTime = new Date(startTime);
       endTime.setMinutes(endTime.getMinutes() + movieData.durationMinutes + 15); // +15 นาที buffer ทำความสะอาดโรง
 
-      const price = Math.round(basePrice * config.priceMultiplier);
+      const price = Math.round(basePrice);
 
       const showtime = showtimeRepo.create({
         movieId: savedMovie.id,
