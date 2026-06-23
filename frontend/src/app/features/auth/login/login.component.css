@@ -1,3 +1,15 @@
+
+/* ซ่อนปุ่ม reveal password ของ Microsoft Edge / IE */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* เผื่อบาง browser ใช้ pseudo-element นี้ */
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
 .auth-page {
       min-height: calc(100vh - 64px);
       display: flex; align-items: center; justify-content: center;
@@ -33,6 +45,9 @@
       color: #fff;
     }
  
+    .pw-toggle i {
+  color: #fff;
+}
     .error { display: block; font-size: 11px; color: #ef4444; margin-top: 5px; }
     .alert-error {
       background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
