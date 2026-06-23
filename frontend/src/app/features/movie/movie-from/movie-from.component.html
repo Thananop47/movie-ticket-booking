@@ -1,0 +1,115 @@
+<div class="page-shell">
+
+<div class="page-container">
+      
+      <h1>{{ isEdit ? '✏️ Edit Movie' : 'Add New Movie' }}</h1>
+    
+      @if(loadingMovie){
+      <div class="loading-state">
+        <div class="spinner"></div><p>Loading movie data...</p>
+      </div>}
+ 
+      @if(!loadingMovie){
+      <form [formGroup]="form" (ngSubmit)="submit()" class="movie-form">
+        <div class="form-grid">
+          <!-- Left Column -->
+          <div class="form-col">
+            <div class="form-group">
+              <label>Movie Title *</label>
+              <input type="text" formControlName="title" placeholder="e.g. Avengers: Endgame" [class.invalid]="isInvalid('title')" />
+              @if(isInvalid('title')){
+              <span class="error" >Title is required (max 255 characters)</span>}
+            </div>
+ 
+            <div class="form-group">
+              <label>Genre *</label>
+              <select formControlName="genre" [class.invalid]="isInvalid('genre')">
+                <option value="">Select genre...</option>
+                @for (genre of genres; track $index) {
+                <option [value]="genre">{{ genre }}</option>}
+              </select>
+              @if(isInvalid('genre')){
+              <span class="error">Genre is required</span>}
+            </div>
+ 
+            <div class="form-group">
+              <label>Duration (minutes) *</label>
+              <input type="number" formControlName="durationMinutes" placeholder="e.g. 148" min="1" max="600" [class.invalid]="isInvalid('durationMinutes')" />
+              @if(isInvalid('durationMinures')){
+              <span class="error" >Duration must be between 1–600 minutes</span>}
+            </div>
+ 
+            <!-- <div class="form-group">
+              <label>Movie status</label>
+              <select formControlName="status" [class.invalid]="isInvalid('isActive')">
+                <option value="">Select status...</option>
+                @for(status of isActive; track $index){
+                  <option [value]="isActive">{{isActive}}</option>
+                  @if(isInvalid('isActive')){
+                    <span class="error">Movie status is required</span>
+                  }
+                }
+              </select>
+            </div> -->
+ 
+
+          </div>
+ 
+          <!-- Right Column -->
+          <div class="form-col">
+            <div class="form-group">
+              <label>Poster URL *</label>
+              <input
+                type="url"
+                formControlName="posterUrl"
+                placeholder="https://example.com/poster.jpg"
+                [class.invalid]="isInvalid('posterUrl')"
+              />
+              @if(isInvalid('posterUrl')){
+              <span class="error" >Must be a valid URL starting with http:// or https://</span>}
+ 
+              <!-- Poster Preview -->
+               @if(form.get('posterUrl')?.valid && form.get('posterUrl')?.value){
+              <div class="poster-preview">
+                <img
+                  [src]="form.get('posterUrl')?.value"
+                  alt="Poster preview"
+                  (error)="onPreviewError($event)"
+                  (load)="previewLoaded = true"
+                />
+                @if(previewLoaded){
+                <p class="preview-ok">✅ Poster preview</p>}
+              </div>}
+            </div>
+ 
+            <div class="form-group">
+              <label>Synopsis *</label>
+              <textarea
+                formControlName="synopsis"
+                rows="8"
+                placeholder="Write a compelling synopsis..."
+                [class.invalid]="isInvalid('synopsis')"
+              ></textarea>
+              <div class="char-count">
+                {{ form.get('synopsis')?.value?.length ?? 0 }} / 2000
+              </div>
+              @if(isInvalid('synopsis')){
+              <span class="error">Synopsis is required (10–2000 characters)</span>}
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Form Error -->
+         @if(submitError){
+        <div class="submit-error">❌ {{ submitError }}</div>}
+ 
+        <!-- Submit -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" (click)="router.navigate(['/admin'])">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="submitting">
+            {{ submitting ? 'Saving...' : (isEdit ? 'Update Movie' : 'Create Movie') }}
+          </button>
+        </div>
+      </form>}
+    </div>
+</div>

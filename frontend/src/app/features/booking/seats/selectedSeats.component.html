@@ -1,0 +1,150 @@
+<div class="page-container">
+      
+    @if(loading){
+      <div class="loading-state">
+        <div class="spinner"></div><p>Loading seat map...</p>
+      </div>}
+    @if(!loading && showtime){
+      <ng-container >
+        <!-- Show Info Header -->
+        <div class="show-header">
+          <div class="show-info">
+            <h1>{{ showtime.movie?.title }}</h1>
+            <div class="show-meta">
+              <span>📅 {{ showtime.startTime | date:'EEE, d MMM yyyy' }}</span>
+              <span>⏰ {{ showtime.startTime | date:'HH:mm' }}</span>
+              <span>🏛️ {{ showtime.hall }}</span>
+            </div>
+          </div>
+          <div class="price-legend">
+            <div class="legend-item">
+              <div class="seat-demo standard"></div>
+              <span>Standard ฿{{ showtime.price | number:'1.0-0' }}</span>
+            </div>
+            <div class="legend-item">
+              <div class="seat-demo premium"></div>
+              <span>Premium ฿{{ showtime.premiumPrice || (showtime.price * 1.5) | number:'1.0-0' }}</span>
+            </div>
+            <div class="legend-item">
+              <div class="seat-demo vip"></div>
+              <span>VIP ฿{{ showtime.vipPrice || (showtime.price * 2.5) | number:'1.0-0' }}</span>
+            </div>
+            <div class="legend-item">
+              <div class="seat-demo booked"></div>
+              <span>Booked</span>
+            </div>
+            <div class="legend-item">
+              <div class="seat-demo selected"></div>
+              <span>Selected</span>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Screen -->
+        <div class="screen-container">
+          <div class="screen">SCREEN</div>
+          <div class="screen-glow"></div>
+        </div>
+ 
+        <!-- Seat Map -->
+        <div class="seat-map">
+            @for (seatRow of seatRows; track $index) {
+          <div  class="seat-row">
+            <span class="row-label">{{ seatRow.row }}</span>
+            <div class="seats">
+                @for (seat of seatRow.seats; track $index) {
+              <button
+                
+                class="seat"
+                [class.standard]="seat.type === SeatType.STANDARD"
+                [class.premium]="seat.type === SeatType.PREMIUM"
+                [class.vip]="seat.type === SeatType.VIP"
+                [class.booked]="seat.status === SeatStatus.BOOKED"
+                [class.selected]="isSelected(seat.id)"
+                [disabled]="seat.status === SeatStatus.BOOKED"
+                [title]="seat.row + seat.number + ' — ' + seat.type"
+                (click)="toggleSeat(seat)"
+              >
+                {{ seat.number }}
+              </button>}
+            </div>
+            <span class="row-label">{{ seatRow.row }}</span>
+          </div>}
+        </div>
+ 
+        <!-- Selection Summary + Booking Form -->
+         @if (selectedSeats.length > 0 || true) {
+        <div class="booking-panel" >
+          <div class="selection-summary">
+            <h3>Your Selection</h3>
+            @if (selectedSeats.length === 0) {
+            <p  class="no-selection">
+              Click seats above to select them
+            </p>}
+            @if(selectedSeats.length){
+            <div >
+              <div class="selected-seats-list">
+                @for (seat of selectedSeats; track $index) {
+                <span  class="selected-tag">
+                  {{ seat.row }}{{ seat.number }}
+                  <button (click)="toggleSeat(seat)">x</button>
+                </span>}
+              </div>
+              <div class="total-row">
+                <span>Total ({{ selectedSeats.length }} seat{{ selectedSeats.length > 1 ? 's' : '' }})</span>
+                <strong class="total-price">฿{{ totalAmount | number:'1.2-2' }}</strong>
+              </div>
+            </div>}
+          </div>
+ 
+          <!-- Booker Info Form -->
+          <form [formGroup]="bookerForm" (ngSubmit)="submitBooking()" class="booker-form">
+            <h3>Your Details</h3>
+ 
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input
+                type="text"
+                formControlName="bookerName"
+                placeholder="e.g. John Doe"
+                [class.invalid]="isInvalid('bookerName')"
+              />
+              @if(isInvalid('bookerName')){
+              <span class="error" >Name is required (min 2 characters)</span>}
+            </div>
+ 
+            <div class="form-group">
+              <label>Email *</label>
+              <input
+                type="email"
+                formControlName="bookerEmail"
+                placeholder="john@example.com"
+                [class.invalid]="isInvalid('bookerEmail')"
+              />
+              @if(isInvalid('bookerEmail')){}
+              <span class="error" >Please enter a valid email</span>
+            </div>
+ 
+            <div class="form-group">
+              <label>Phone (optional)</label>
+              <input type="tel" formControlName="bookerPhone" placeholder="0812345678" />
+            </div>
+            @if(bookingError){
+            <div  class="booking-error">
+              ❌ {{ bookingError }}
+            </div>}
+ 
+            <button
+              type="submit"
+              class="btn-confirm"
+              [disabled]="selectedSeats.length === 0 || bookerForm.invalid || submitting"
+            >
+            @if(submitting){
+              <span >⏳ Processing...</span>}
+              @if(!submitting){
+              <span >✅ Confirm Booking — ฿{{ totalAmount | number:'1.0-0' }}</span>}
+            </button>
+          </form>
+          </div>}
+      </ng-container>}
+    </div>

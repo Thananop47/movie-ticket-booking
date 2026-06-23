@@ -1,0 +1,151 @@
+<div class="page-shell">
+
+  <div class="content-card">
+
+    <!-- Tab header -->
+    <div class="tab-header">
+      <span class="tab active">Movies</span>
+    </div>
+
+    <!-- Filter row -->
+    <div class="filter-row">
+      <div class="filter-field">
+        <label>Search</label>
+        <input
+          type="text"
+          placeholder="Movie title..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+        />
+      </div>
+
+      <div class="filter-field">
+        <label>Genre</label>
+        <select [(ngModel)]="selectedGenre" (ngModelChange)="onSearch()">
+          <option [ngValue]="null">All genres</option>
+          @for (genre of genres; track genre) {
+            <option [value]="genre">{{ genre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label>Status</label>
+        <input type="text" placeholder="Active / Inactive" disabled />
+      </div>
+
+      <button class="btn-search"><i class="ti ti-search" aria-hidden="true"></i> Search</button>
+
+      <button class="btn-add" (click)="router.navigate(['/admin/movies/new'])">
+        <i class="ti ti-plus" aria-hidden="true"></i> Add movie
+      </button>
+    </div>
+
+    <!-- Loading -->
+    @if (loading) {
+      <div class="loading-row">
+        <div class="spinner"></div>
+        <span>Loading movies...</span>
+      </div>
+    }
+
+    <!-- Table -->
+    @if (!loading) {
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-no">No.</th>
+              <th>Poster</th>
+              <th>Title</th>
+              <th>Genre</th>
+              <th>Duration</th>
+              <th>Create at</th>
+              <th>Status</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (movie of filteredMovies; track movie.id; let i = $index) {
+              <tr >
+                <td class="col-no">{{ i + 1 }}</td>
+                <td>
+                  <img
+                    [src]="movie.posterUrl"
+                    [alt]="movie.title"
+                    class="poster-thumb"
+                    (error)="onImgError($event)"
+                  />
+                </td>
+                <td>
+                  <div class="cell-title">{{ movie.title }}</div>
+                  
+                </td>
+                <td><span class="tag">{{ movie.genre }}</span></td>
+                <td>{{ movie.durationMinutes }} min</td>
+                <td>{{ movie.createdAt | date:'yyyy-MM-dd' }}</td>
+                <td>
+                  <span class="status-pill" [class.is-active]="movie.isActive" [class.is-inactive]="!movie.isActive">
+                    {{ movie.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="col-actions">
+                  <button class="action-link" (click)="editMovie(movie.id)">Edit</button>
+                  <button class="action-link" (click)="toggleActive(movie)">
+                    {{ movie.isActive ? 'Disable' : 'Enable' }}
+                  </button>
+                  <button class="action-link danger" (click)="confirmDelete(movie)">Delete</button>
+                </td>
+              </tr>
+            }
+
+            @if (filteredMovies.length === 0) {
+              <tr>
+                <td colspan="9" class="empty-row">No movies found</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-bar">
+        <button class="page-link" [disabled]="currentPage === 1" (click)="changePage(1)">First</button>
+        <button class="page-link" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">Prev</button>
+
+        @for (p of pageNumbers; track p) {
+          <button class="page-number" [class.active]="p === currentPage" (click)="changePage(p)">{{ p }}</button>
+        }
+        @if(totalPages > pageNumbers[pageNumbers.length - 1]){
+        <span class="page-dots" >...</span>}
+
+        <button class="page-link" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">Next</button>
+        <button class="page-link" [disabled]="currentPage === totalPages" (click)="changePage(totalPages)">Last</button>
+
+        <span class="page-summary">{{ totalMovies }} movies total</span>
+      </div>
+    }
+
+  </div>
+
+  <!-- Confirm Delete Dialog -->
+  @if (movieToDelete) {
+    <div class="dialog-overlay" (click)="cancelDelete()">
+      <div class="dialog-box" (click)="$event.stopPropagation()">
+        <div class="dialog-icon"><i class="ti ti-trash" aria-hidden="true"></i></div>
+        <h3>Delete movie?</h3>
+        <p>
+          Are you sure you want to delete <strong>{{ movieToDelete.title }}</strong>?
+          This will also remove all associated showtimes. This action cannot be undone.
+        </p>
+        <div class="dialog-actions">
+          <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+          <button class="btn-confirm-delete" (click)="deleteMovie()" [disabled]="deleting">
+            {{ deleting ? 'Deleting...' : 'Yes, delete' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,58 @@
+<div class="page-container">
+      <h1>🎟️ My Tickets</h1>
+    
+    @if(!isLoggedIn){
+      <div  class="auth-prompt">
+        <p>Please log in to view your tickets.</p>
+        <button class="btn btn-primary" routerLink="/auth/login">Login</button>
+      </div>}
+      @if(isLoggedIn && loading){
+      <div  class="loading-state">
+        <div class="spinner"></div><p>Loading tickets...</p>
+      </div>}
+      @if(isLoggedIn && !loading && bookings.length === 0){
+      <div class="empty-state">
+        <p>🎭 You have no bookings yet.</p>
+        <button class="btn btn-primary" routerLink="/movies">Browse Movies</button>
+      </div>}
+      @if(isLoggedIn && !loading && bookings.length > 0){
+      <div  class="tickets-list">
+        @for (booking of bookings; track $index) {
+        <div  class="ticket-row" [class.cancelled]="booking.status === 'cancelled'">
+          <div class="ticket-poster">
+            <img [src]="booking.showtime?.movie?.posterUrl" [alt]="booking.showtime?.movie?.title" (error)="onImgError($event)" />
+          </div>
+          <div class="ticket-info">
+            <div class="ticket-status" [class]="booking.status">
+              {{ booking.status | uppercase }}
+            </div>
+            <h3>{{ booking.showtime?.movie?.title }}</h3>
+            <p class="ticket-meta">
+              📅 {{ booking.showtime?.startTime | date:'EEE d MMM yyyy, HH:mm' }}
+              · 🏛️ {{ booking.showtime?.hall }}
+            </p>
+            <p class="ticket-seats">
+            {{ getSeatNames(booking.seats) }}
+            </p>
+            <p class="ticket-code">{{ booking.bookingCode }}</p>
+          </div>
+          <div class="ticket-actions">
+            <div class="ticket-total">฿{{ booking.totalAmount | number:'1.2-2' }}</div>
+            <button
+              class="btn btn-small btn-pdf"
+              (click)="download(booking)"
+              [disabled]="booking.status === 'cancelled'"
+            >📄 PDF</button>
+            <button
+              class="btn btn-small btn-view"
+              (click)="viewBooking(booking.id)"
+            >View</button>
+            <button
+              class="btn btn-small btn-cancel"
+              @if (booking.status = 'confirmed')
+              (click)="cancelBooking(booking)"
+            >Cancel</button>
+          </div>
+        </div>}
+      </div>}
+    </div>

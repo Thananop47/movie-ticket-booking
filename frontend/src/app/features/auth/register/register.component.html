@@ -1,0 +1,67 @@
+ <div class="auth-page">
+      <div class="auth-card">
+        
+        <h1>Create Account</h1>
+        <p class="subtitle">Join CinemaBook to start booking tickets</p>
+ 
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" formControlName="fullName" placeholder="John Doe" [class.invalid]="isInvalid('fullName')" autocomplete="name" />
+            @if(isInvalid('fullName')){
+            <span class="error" >Name must be at least 2 characters</span>}
+          </div>
+ 
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" formControlName="email" placeholder="you@example.com" [class.invalid]="isInvalid('email')" autocomplete="email" />
+            @if(isInvalid('email')){
+            <span class="error" >Please enter a valid email</span>}
+          </div>
+ 
+          <div class="form-group">
+            <label>Password</label>
+            <div class="password-wrapper">
+              <input [type]="showPw ? 'text' : 'password'" formControlName="password" placeholder="Min 8 characters" [class.invalid]="isInvalid('password')" autocomplete="new-password" />
+              <button type="button" class="pw-toggle" (click)="showPw = !showPw">
+                @if (showPw) {
+                  <i class="ti ti-eye-off"></i>
+                } @else {
+                  <i class="ti ti-eye"></i>
+                }
+              </button>
+            </div>
+            @if(isInvalid('password')){
+            <span class="error" >Password must be at least 8 characters</span>}
+          </div>
+ 
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <div class="password-wrapper">
+            <input [type]="showReptPw ? 'text' : 'password'"  formControlName="confirmPassword" placeholder="Repeat password" [class.invalid]="isInvalid('confirmPassword') || (form.errors?.['mismatch'] && form.get('confirmPassword')?.touched)" autocomplete="new-password" />
+            <button type="button" class="pw-toggle" (click)="showReptPw = !showReptPw">
+                @if (showReptPw) {
+                  <i class="ti ti-eye-off"></i>
+                } @else {
+                  <i class="ti ti-eye"></i>
+                }
+              </button>
+            </div>
+            @if(form.errors?.['mismatch'] && form.get('confirmPassword')?.touched){
+            <span class="error" >Passwords do not match</span>}
+          </div>
+          @if(registerError){
+
+          
+          <div  class="alert-error">❌ {{ registerError }}</div>}
+ 
+          <button type="submit" class="btn-submit" [disabled]="submitting">
+            {{ submitting ? 'Creating Account...' : 'Create Account' }}
+          </button>
+        </form>
+ 
+        <div class="auth-footer">
+          Already have an account? <a routerLink="/auth/login">Sign in</a>
+        </div>
+      </div>
+    </div>

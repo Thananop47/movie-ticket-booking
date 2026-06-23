@@ -1,0 +1,62 @@
+<div class="page-container">
+      
+        @if(loading){
+      <div class="loading-state">
+        <div class="spinner"></div><p>Loading...</p>
+      </div>}
+      @if(!loading && movie){
+      <div class="detail-layout">
+        <!-- Poster Column -->
+        <div class="poster-col">
+          <img [src]="movie.posterUrl" [alt]="movie.title" (error)="onImgError($event)" class="poster-img" />
+          <div class="poster-meta">
+            
+            
+          </div>
+        </div>
+ 
+        <!-- Info Column -->
+        <div class="info-col">
+            <div class="info-row">
+          <h1 class="movie-title">{{ movie.title }}</h1> 
+          <span class="meta-chip genre">{{ movie.genre }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-item"><i class="ti ti-clock-hour-4" aria-hidden="true"></i>{{ formatDuration(movie.durationMinutes) }} min</span>
+            
+          </div>
+         
+          <p class="synopsis">{{ movie.synopsis }}</p>
+ 
+          <!-- Showtimes Section -->
+          <div class="showtimes-section">
+            <h2>All Showtimes</h2>
+            @if(loadingShowtimes){
+            <div class="loading-mini">
+              <div class="spinner-sm"></div> Loading showtimes...
+            </div>}
+            @else if(!loadingShowtimes && showtimes.length === 0){
+            <div class="no-showtimes">
+              No upcoming showtimes available.
+            </div>}
+            @if(!loadingShowtimes && showtimes.length > 0){
+            <div  class="showtimes-grid">
+                @for (showtime of showtimes; track showtime.id) {
+              <div
+                class="showtime-card"
+                (click)="bookShowtime(showtime)"
+              >
+                <div class="showtime-date">{{ showtime.startTime | date:'EEE, d MMM' }}</div>
+                <div class="showtime-time">{{ showtime.startTime | date:'HH:mm' }}</div>
+                <div class="showtime-book">Select →</div>
+              </div>}
+            </div>}
+          </div>
+        </div>
+      </div>
+      @if(!loading && !movie){
+      <div class="error-state">
+        <p>Movie not found.</p>
+        <button class="btn btn-primary" routerLink="/movies">Back to Movies</button>
+      </div>}}
+    </div>

@@ -1,0 +1,120 @@
+ <div class="page-container">
+      <!-- Hero Banner -->
+      <div class="hero">
+        <h1>Now Showing</h1>
+    
+      </div>
+ 
+      <!-- Search & Filter Bar -->
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon"><i class="ti ti-search"></i></span>
+          <input
+            type="text"
+            placeholder="Search movies..."
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange($event)"
+            class="search-input"
+          />
+        </div>
+ 
+        <div class="genre-filters">
+          <button
+            class="genre-chip"
+            [class.active]="!selectedGenre"
+            (click)="filterByGenre(null)"
+          >All</button>
+          @for (genre of genres; track $index) {
+          <button
+           
+            class="genre-chip"
+            [class.active]="selectedGenre === genre"
+            (click)="filterByGenre(genre)"
+          >{{ genre }}</button>}
+        </div>
+      </div>
+ 
+      <!-- Loading State -->
+       @if (loading){
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading movies...</p>
+      </div>}
+ 
+      <!-- Error State -->
+       @if (error && !loading){
+      <div class="error-state">
+        <p>{{ error }}</p>
+        <button class="btn btn-primary" (click)="loadMovies()">Try Again</button>
+      </div>}
+ 
+      <!-- Movies Grid -->
+       @if(!loading && !error){   
+      <div class="movies-grid">
+        @for(movie of movies; track movie.id){
+        <div
+          
+          class="movie-card"
+          (click)="goToMovie(movie.id)"
+        >
+          <div class="card-poster">
+            <img
+              [src]="movie.posterUrl"
+              [alt]="movie.title"
+              (error)="onImgError($event)"
+              loading="lazy"
+            />
+            <div class="card-overlay">
+              <span class="genre-badge">{{ movie.genre }}</span>
+              
+            </div>
+
+            <div class="hover-overlay">
+              <div>
+              <p class="card-title"><i class="ti ti-movie" aria-hidden="true"></i>  {{ movie.title}}</p>
+              <p class="card-title"><i class="ti ti-clock-hour-4" aria-hidden="true"></i>{{formatDuration(movie.durationMinutes)}}</p>
+            </div>
+              <button class="btn-book-hover">Book now</button>
+            </div>
+          </div>
+          <div class="card-body">
+            
+            <h3 class="card-title">{{ movie.title }}</h3>
+            <p class="card-meta">
+              <span><i class="ti ti-clock-hour-4" aria-hidden="true"></i>{{ formatDuration(movie.durationMinutes)  }} min</span>
+             
+            </p>
+            <p class="card-synopsis">{{ movie.synopsis | slice:0:100 }}...</p>
+           
+          </div>
+        </div>
+ 
+        <!-- Empty State -->
+         @if(movies.length === 0){
+        <div class="empty-state">
+          <p>🎭 No movies found matching your search.</p>
+          <button class="btn btn-outline" (click)="clearFilters()">Clear Filters</button>
+        </div>}}
+      </div>
+ 
+      <!-- Pagination -->
+       @if(pagination && pagination.totalPages > 1){
+      <div class="pagination">
+        <button
+          class="page-btn"
+          [disabled]="currentPage === 1"
+          (click)="changePage(currentPage - 1)"
+        >← Prev</button>
+ 
+        <span class="page-info">
+          Page {{ pagination.page }} of {{ pagination.totalPages }}
+          ({{ pagination.total }} movies)
+        </span>
+ 
+        <button
+          class="page-btn"
+          [disabled]="currentPage === pagination.totalPages"
+          (click)="changePage(currentPage + 1)"
+        >Next →</button>
+      </div> }}
+    </div>

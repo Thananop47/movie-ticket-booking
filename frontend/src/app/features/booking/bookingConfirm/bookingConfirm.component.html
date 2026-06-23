@@ -1,0 +1,128 @@
+<div class="page-container">
+    @if(loading){
+      <div class="loading-state">
+        <div class="spinner"></div><p>Loading your ticket...</p>
+      </div>}
+      
+      @if(!loading && booking){
+      <ng-container>
+        <!-- Success Banner -->
+        <div class="success-banner">
+          <div class="success-icon">🎉</div>
+          <h1>Booking Confirmed!</h1>
+          <p>Your seats have been reserved successfully.</p>
+        </div>
+ 
+        <!-- Ticket Card -->
+        <div class="ticket-card">
+          <!-- Ticket Header -->
+          <div class="ticket-header">
+            <div class="ticket-brand">🎬 CinemaBook</div>
+            <div class="ticket-code">{{ booking.bookingCode }}</div>
+          </div>
+ 
+          <!-- Movie Info -->
+          <div class="ticket-movie">
+            <div class="movie-poster-thumb">
+              <img
+                [src]="booking.showtime?.movie?.posterUrl"
+                [alt]="booking.showtime?.movie?.title"
+                (error)="onImgError($event)"
+              />
+            </div>
+            <div class="movie-info">
+              <h2>{{ booking.showtime?.movie?.title }}</h2>
+              <p class="movie-genre">{{ booking.showtime?.movie?.genre }} · {{ booking.showtime?.movie?.durationMinutes }} min</p>
+            </div>
+          </div>
+ 
+          <!-- Ticket Divider -->
+          <div class="ticket-divider">
+            <div class="circle left"></div>
+            <div class="dash-line"></div>
+            <div class="circle right"></div>
+          </div>
+ 
+          <!-- Ticket Details Grid -->
+          <div class="ticket-details">
+            <div class="detail-item">
+              <span class="detail-label">DATE</span>
+              <span class="detail-value">{{ booking.showtime?.startTime | date:'EEE, d MMM yyyy' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">TIME</span>
+              <span class="detail-value">{{ booking.showtime?.startTime | date:'HH:mm' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">HALL</span>
+              <span class="detail-value">{{ booking.showtime?.hall }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">SEATS</span>
+              <span class="detail-value seats-value">
+                @for (seat of booking.seats; track $index) {
+                <span  class="seat-chip" [class]="seat.type">
+                  {{ seat.row }}{{ seat.number }}
+                </span>}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">NAME</span>
+              <span class="detail-value">{{ booking.bookerName }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">EMAIL</span>
+              <span class="detail-value">{{ booking.bookerEmail }}</span>
+            </div>
+          </div>
+ 
+          <!-- Ticket Divider -->
+          <div class="ticket-divider">
+            <div class="circle left"></div>
+            <div class="dash-line"></div>
+            <div class="circle right"></div>
+          </div>
+ 
+          <!-- Total -->
+          <div class="ticket-total">
+            <div class="total-breakdown">
+                @for (seat of booking.seats; track $index) {
+              <div class="breakdown-row">
+                <span>{{ seat.row }}{{ seat.number }} ({{ seat.type }})</span>
+                <span>฿{{ getSeatPrice(seat.type) | number:'1.0-0' }}</span>
+              </div>}
+            </div>
+            <div class="total-final">
+              <span>Total Amount</span>
+              <strong>฿{{ booking.totalAmount | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+ 
+          <!-- Ticket Footer -->
+          <div class="ticket-footer">
+            <p>Please present this ticket at the entrance · Booking ID: {{ booking.id | slice:0:8 }}...</p>
+          </div>
+        </div>
+ 
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn btn-pdf" (click)="downloadPdf()" [disabled]="downloading">
+            @if(downloading){
+            <span >⏳ Preparing PDF...</span>}
+            @if(!downloading){
+            <span>📄 Download Ticket (PDF)</span>}
+          </button>
+          <button class="btn btn-outline" routerLink="/movies">
+            🎬 Browse More Movies
+          </button>
+          <button class="btn btn-ghost" routerLink="/booking/my-tickets">
+            🎟️ My Tickets
+          </button>
+        </div>
+      </ng-container>}
+      @if(!loading && !booking){
+      <div class="error-state">
+        <p>Booking not found.</p>
+        <button class="btn btn-primary" routerLink="/movies">Go Home</button>
+      </div>}
+    </div>

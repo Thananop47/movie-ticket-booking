@@ -1,0 +1,63 @@
+
+services:
+  # ─── MySQL Database ─────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: cinema_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: cinema_booking
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password123
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── NestJS Backend (Production Mode) ───────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cinema_backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: admin
+      DB_PASSWORD: password123
+      DB_NAME: cinema_booking
+      DB_SYNCHRONIZE: 'true' # ในโปรเจกต์ส่งงานเปิดไว้ได้ครับ เพื่อให้ TypeORM สร้างตารางให้กรรมการอัตโนมัติ
+      JWT_SECRET: super-secret-jwt-key-change-in-production-min32
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGINS: http://localhost:4200
+    ports:
+      - '3000:3000'
+
+  # ─── Angular Frontend ────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cinema_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '4200:4200'
+    environment:
+      - API_URL=http://localhost:3000/api/v1
+
+volumes:
+  mysql_data:

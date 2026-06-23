@@ -1,0 +1,79 @@
+ .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      padding: 0 32px;
+      background: #8E1616;
+      border-bottom: 1px solid #741717;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .brand-icon { font-size: 24px; }
+    .brand-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+    .navbar-links {
+      display: flex;
+      gap: 28px;
+    }
+    .navbar-links a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .navbar-links a:hover,
+    .navbar-links a.active { color: #ffffff; }
+    .admin-link { color: #f5a623 !important; }
+    .navbar-auth {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .user-name {
+      color: #b0b0c8;
+      font-size: 14px;
+    }
+    .btn {
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #e94560;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #c73652; }
+    .btn-outline {
+      background: transparent;
+      color: #e94560;
+      border: 1.5px solid #e94560;
+    }
+    .btn-outline:hover {
+      background: #e94560;
+      color: #fff;
+    }
