@@ -16,12 +16,12 @@
 git clone https://github.com/Thananop47/movie-ticket-booking.git
 cd ชื่อโปรเจกต์
 ```
-2.เปิด Terminal ที่หน้าโฟลเดอร์หลักของโปรเจกต์ แล้วใช้คำสั่ง
+2. เปิด Terminal ที่หน้าโฟลเดอร์หลักของโปรเจกต์ แล้วใช้คำสั่ง
 ```bash
 docker-compose up -d --build
 ```
 
-3.รันคำสั่งด้านล่างนี้เพื่อเพิ่มข้อมูลจำลอง
+3. รันคำสั่งด้านล่างนี้เพื่อเพิ่มข้อมูลจำลอง
 ```bash
 docker exec -it cinema_backend node dist/seed/seed-cli.js
 ```
